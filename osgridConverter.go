@@ -2,7 +2,7 @@
 // Ordnance Survey grid references to latitude/longitude coordinates.
 // Original javascript implementaion by Chris Veness.
 // For more information see http://www.movable-type.co.uk/scripts/latlong-gridref.html
-package osgridConverter
+package osgridconverter
 
 import (
 	"math"
