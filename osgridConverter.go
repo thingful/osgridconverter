@@ -1,7 +1,5 @@
-// osgridConverter package contains contains utility functions to convert
+// osgridConverter package contains utility functions to convert
 // Ordnance Survey grid references to latitude/longitude coordinates.
-// Original javascript implementaion by Chris Veness.
-// For more information see http://www.movable-type.co.uk/scripts/latlong-gridref.html
 package osgridconverter
 
 import (
@@ -22,7 +20,10 @@ const (
 	n3 = n * n * n          // n³
 )
 
-// OsGridToLatLon converts Ordnance Survey grid reference easting/northing coordinate to latitude/longitude
+// OsGridToLatLon converts Ordnance Survey grid reference
+// easting and northing coordinates to latitude and longitude
+// according to the WGS-84 ellipsoidal model.
+// It returns latitude and longitude coordinates as float64 type
 func OsGridToLatLon(easting, northing float64) (lat, lon float64) {
 	φ := φ0
 	M := float64(0)
