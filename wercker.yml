@@ -1,8 +1,6 @@
 box wercker/golang
-
 # Build definition
 build:
-
   steps:
     # Sets the go workspace and places you package
     # at the right place in the workspace tree
