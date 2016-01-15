@@ -6,8 +6,8 @@ import (
 
 func TestConvertToLatLon(t *testing.T) {
 	testcases := []struct {
-		northing    float64
 		easting     float64
+		northing    float64
 		expectedLat float64
 		expectedLon float64
 	}{
@@ -39,6 +39,35 @@ func TestConvertToLatLon(t *testing.T) {
 
 		if c.Lon != testcase.expectedLon {
 			t.Errorf("Unexpected error generating longitude coordinate. Expected %g, got %g", testcase.expectedLon, c.Lon)
+		}
+	}
+}
+
+func TestConvertToLatLonError(t *testing.T) {
+	testcases := []struct {
+		easting  float64
+		northing float64
+	}{
+		{
+			easting:  -0.1,
+			northing: 1,
+		},
+		{
+			easting:  1,
+			northing: -0.1,
+		},
+		{
+			easting:  -1,
+			northing: -2,
+		},
+	}
+
+	for _, testcase := range testcases {
+
+		_, err := ConvertToLatLon(testcase.easting, testcase.northing)
+
+		if err == nil {
+			t.Errorf("Expecting Error when passing out of bounds arguments")
 		}
 	}
 }
@@ -77,6 +106,39 @@ func TestConvertToNorthingEasting(t *testing.T) {
 
 		if o.Northing != testcase.expectedN {
 			t.Errorf("Unexpected error generating northing coordinate. Expected %g, got %g", testcase.expectedN, o.Northing)
+		}
+	}
+}
+
+func TestConvertToNorthingEastingError(t *testing.T) {
+	testcases := []struct {
+		lat float64
+		lon float64
+	}{
+		{
+			lat: -90.1,
+			lon: 1,
+		},
+		{
+			lat: 90.1,
+			lon: 1,
+		},
+		{
+			lat: 1,
+			lon: 180.1,
+		},
+		{
+			lat: 1,
+			lon: -180.1,
+		},
+	}
+
+	for _, testcase := range testcases {
+
+		_, err := ConvertToNorthingEasting(testcase.lat, testcase.lon)
+
+		if err == nil {
+			t.Errorf("Expecting Error when passing out of bounds arguments")
 		}
 	}
 }
