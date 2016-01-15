@@ -23,6 +23,20 @@ const (
 	n3 = n * n * n                // n³
 )
 
+var (
+	// ErrInvalidOSGridPoints is an error that can be returned when OS
+	// grid points passed to the converter function have negative values
+	ErrInvalidOSGridPoints = errors.New("osgridconverter: Invalid arguments. Easting and Northing coordinates should be positive float64.")
+
+	// ErrInvalidLat is an error that can be returned when the latitude
+	// value passed to the converter function is lower than -90 or highter than +90
+	ErrInvalidLat = errors.New("osgridconverter: Latitude values must be between -90 and +90")
+
+	// ErrInvalidLon is an error that can be returned when the longitude
+	// value passed to the converter function is lower than -180 or highter than +180
+	ErrInvalidLon = errors.New("osgridconverter: Longitude values must be between -180 and +180")
+)
+
 // Coordinates struct holds the latitude and longitude coordinates
 type Coordinates struct {
 	Lat float64
@@ -46,8 +60,7 @@ func ConvertToLatLon(easting, northing float64) (*Coordinates, error) {
 
 	// validate input
 	if easting < 0 || northing < 0 {
-		err := errors.New("Invalid arguments. Easting and Northing coordinates should be positive float64.")
-		return &c, err
+		return &c, ErrInvalidOSGridPoints
 	}
 
 	φ := φ0
@@ -109,11 +122,11 @@ func ConvertToNorthingEasting(lat, lon float64) (*OsGrid, error) {
 
 	// validate input
 	if lat < -90 || lat > 90 {
-		return &o, errors.New("Latitude values must be between -90 and +90")
+		return &o, ErrInvalidLat
 	}
 
 	if lon < -180 || lon > 180 {
-		return &o, errors.New("Longitude values must be between -180 and +180")
+		return &o, ErrInvalidLon
 	}
 
 	φ := toRadians(lat)
