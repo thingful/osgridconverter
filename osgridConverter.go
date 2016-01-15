@@ -23,12 +23,14 @@ const (
 	n3 = n * n * n                // n³
 )
 
-type coordinates struct {
+// Coordinates struct holds the latitude and longitude coordinates
+type Coordinates struct {
 	Lat float64
 	Lon float64
 }
 
-type osGrid struct {
+// OsGrid struct holds the easting and northing grid points
+type OsGrid struct {
 	Easting  float64
 	Northing float64
 }
@@ -38,8 +40,8 @@ type osGrid struct {
 // Easting and Northing arguments should be fully numeric
 // references in metres (eg 438700, 114800).
 // It returns latitude and longitude coordinates as float64 type
-func ConvertToLatLon(easting, northing float64) (coordinates, error) {
-	c := coordinates{}
+func ConvertToLatLon(easting, northing float64) (Coordinates, error) {
+	c := Coordinates{}
 
 	// validate input
 	if easting < 0 || northing < 0 {
@@ -100,8 +102,8 @@ func ConvertToLatLon(easting, northing float64) (coordinates, error) {
 // ConvertToNorthingEasting converts latitude and longitude to
 // Ordnance Survey grid reference northing and easting.
 // It returns northing and easting coordinates as float64 type
-func ConvertToNorthingEasting(lat, lon float64) (osGrid, error) {
-	o := osGrid{}
+func ConvertToNorthingEasting(lat, lon float64) (OsGrid, error) {
+	o := OsGrid{}
 
 	// validate input
 	if lat < -90 || lat > 90 {
