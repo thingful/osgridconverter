@@ -13,7 +13,7 @@ $ go get github.com/thingful/osgridconverter
 ```
 
 ## Build Status
-...
+[![wercker status](https://app.wercker.com/status/f84eb5310b57ee9d6acc3501763fdb75/s "wercker status")](https://app.wercker.com/project/bykey/f84eb5310b57ee9d6acc3501763fdb75)
 
 ## License
 [MIT License](LICENSE "MIT License")
