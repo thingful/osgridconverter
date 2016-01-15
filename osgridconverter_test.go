@@ -26,14 +26,19 @@ func TestConvertToLatLon(t *testing.T) {
 	}
 
 	for _, testcase := range testcases {
-		lat, lon := ConvertToLatLon(testcase.easting, testcase.northing)
 
-		if lat != testcase.expectedLat {
-			t.Errorf("Unexpected error generating latitude coordinate. Expected %g, got %g", testcase.expectedLat, lat)
+		c, err := ConvertToLatLon(testcase.easting, testcase.northing)
+
+		if err != nil {
+			t.Errorf("Error generating lat/lon coordinates: %v", err)
 		}
 
-		if lon != testcase.expectedLon {
-			t.Errorf("Unexpected error generating longitude coordinate. Expected %g, got %g", testcase.expectedLon, lon)
+		if c.Lat != testcase.expectedLat {
+			t.Errorf("Unexpected error generating latitude coordinate. Expected %g, got %g", testcase.expectedLat, c.Lat)
+		}
+
+		if c.Lon != testcase.expectedLon {
+			t.Errorf("Unexpected error generating longitude coordinate. Expected %g, got %g", testcase.expectedLon, c.Lon)
 		}
 	}
 }
@@ -60,14 +65,18 @@ func TestConvertToNorthingEasting(t *testing.T) {
 	}
 
 	for _, testcase := range testcases {
-		easting, northing := ConvertToNorthingEasting(testcase.lat, testcase.lon)
+		o, err := ConvertToNorthingEasting(testcase.lat, testcase.lon)
 
-		if easting != testcase.expectedE {
-			t.Errorf("Unexpected error generating easting coordinate. Expected %g, got %g", testcase.expectedE, easting)
+		if err != nil {
+			t.Errorf("Error generating easting/northing coordinates: %v", err)
 		}
 
-		if northing != testcase.expectedN {
-			t.Errorf("Unexpected error generating northing coordinate. Expected %g, got %g", testcase.expectedN, northing)
+		if o.Easting != testcase.expectedE {
+			t.Errorf("Unexpected error generating easting coordinate. Expected %g, got %g", testcase.expectedE, o.Easting)
+		}
+
+		if o.Northing != testcase.expectedN {
+			t.Errorf("Unexpected error generating northing coordinate. Expected %g, got %g", testcase.expectedN, o.Northing)
 		}
 	}
 }

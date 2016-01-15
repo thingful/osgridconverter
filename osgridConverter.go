@@ -23,16 +23,28 @@ const (
 	n3 = n * n * n                // n³
 )
 
+type coordinates struct {
+	Lat float64
+	Lon float64
+}
+
+type osGrid struct {
+	Easting  float64
+	Northing float64
+}
+
 // ConvertToLatLon converts Ordnance Survey grid reference easting and northing
 // coordinates to latitude and longitude according to the WGS-84 ellipsoidal model.
 // Easting and Northing arguments should be fully numeric
 // references in metres (eg 438700, 114800).
 // It returns latitude and longitude coordinates as float64 type
-func ConvertToLatLon(easting, northing float64) (lat, lon float64) {
+func ConvertToLatLon(easting, northing float64) (coordinates, error) {
+	c := coordinates{}
 
+	// validate input
 	if easting < 0 || northing < 0 {
-		errors.New("Invalid arguments. Easting and Northing coordinates should be positive float64.")
-		return 0, 0
+		err := errors.New("Invalid arguments. Easting and Northing coordinates should be positive float64.")
+		return c, err
 	}
 
 	φ := φ0
@@ -79,13 +91,27 @@ func ConvertToLatLon(easting, northing float64) (lat, lon float64) {
 	φ = φ - VII*dE2 + VIII*dE4 - IX*dE6
 	λ := λ0 + X*dE - XI*dE3 + XII*dE5 - XIIA*dE7
 
-	return toDegrees(φ), toDegrees(λ)
+	c.Lat = toDegrees(φ)
+	c.Lon = toDegrees(λ)
+
+	return c, nil
 }
 
 // ConvertToNorthingEasting converts latitude and longitude to
 // Ordnance Survey grid reference northing and easting.
 // It returns northing and easting coordinates as float64 type
-func ConvertToNorthingEasting(lat, lon float64) (easting, northing float64) {
+func ConvertToNorthingEasting(lat, lon float64) (osGrid, error) {
+	o := osGrid{}
+
+	// validate input
+	if lat < -90 || lat > 90 {
+		return o, errors.New("Latitude values must be between -90 and +90")
+	}
+
+	if lon < -180 || lon > 180 {
+		return o, errors.New("Longitude values must be between -180 and +180")
+	}
+
 	φ := toRadians(lat)
 	λ := toRadians(lon)
 
@@ -123,11 +149,13 @@ func ConvertToNorthingEasting(lat, lon float64) (easting, northing float64) {
 
 	northingVal := I + II*Δλ2 + III*Δλ4 + IIIA*Δλ6
 	northingVal, _ = strconv.ParseFloat(fmt.Sprintf("%.3f", northingVal), 64) // truncate after 3 decimal positions
+	o.Northing = northingVal
 
 	eastingVal := e0 + IV*Δλ + V*Δλ3 + VI*Δλ5
 	eastingVal, _ = strconv.ParseFloat(fmt.Sprintf("%.3f", eastingVal), 64) // truncate after 3 decimal positions
+	o.Easting = eastingVal
 
-	return eastingVal, northingVal
+	return o, nil
 }
 
 // toDegrees converts radians to numeric degrees
