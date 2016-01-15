@@ -39,14 +39,15 @@ type OsGrid struct {
 // coordinates to latitude and longitude according to the WGS-84 ellipsoidal model.
 // Easting and Northing arguments should be fully numeric
 // references in metres (eg 438700, 114800).
-// It returns latitude and longitude coordinates as float64 type
-func ConvertToLatLon(easting, northing float64) (Coordinates, error) {
+// It returns a struct containing latitude and longitude coordinates as float64 type
+// or an error if the arguments passed in are out of bounds
+func ConvertToLatLon(easting, northing float64) (*Coordinates, error) {
 	c := Coordinates{}
 
 	// validate input
 	if easting < 0 || northing < 0 {
 		err := errors.New("Invalid arguments. Easting and Northing coordinates should be positive float64.")
-		return c, err
+		return &c, err
 	}
 
 	φ := φ0
@@ -96,22 +97,23 @@ func ConvertToLatLon(easting, northing float64) (Coordinates, error) {
 	c.Lat = toDegrees(φ)
 	c.Lon = toDegrees(λ)
 
-	return c, nil
+	return &c, nil
 }
 
 // ConvertToNorthingEasting converts latitude and longitude to
 // Ordnance Survey grid reference northing and easting.
-// It returns northing and easting coordinates as float64 type
-func ConvertToNorthingEasting(lat, lon float64) (OsGrid, error) {
+// It returns a struct containing easting and northing coordinates as float64 type
+// or an error if the arguments passed in are out of bounds
+func ConvertToNorthingEasting(lat, lon float64) (*OsGrid, error) {
 	o := OsGrid{}
 
 	// validate input
 	if lat < -90 || lat > 90 {
-		return o, errors.New("Latitude values must be between -90 and +90")
+		return &o, errors.New("Latitude values must be between -90 and +90")
 	}
 
 	if lon < -180 || lon > 180 {
-		return o, errors.New("Longitude values must be between -180 and +180")
+		return &o, errors.New("Longitude values must be between -180 and +180")
 	}
 
 	φ := toRadians(lat)
@@ -157,7 +159,7 @@ func ConvertToNorthingEasting(lat, lon float64) (OsGrid, error) {
 	eastingVal, _ = strconv.ParseFloat(fmt.Sprintf("%.3f", eastingVal), 64) // truncate after 3 decimal positions
 	o.Easting = eastingVal
 
-	return o, nil
+	return &o, nil
 }
 
 // toDegrees converts radians to numeric degrees
