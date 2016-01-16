@@ -14,14 +14,14 @@ func TestConvertToLatLon(t *testing.T) {
 		{
 			easting:     651409,
 			northing:    313177,
-			expectedLat: 52.65755427802226,  // SHOULD BE 52.657977
-			expectedLon: 1.7179068604835606, // SHOULD BE 1.716038
+			expectedLat: 52.65796257381598,
+			expectedLon: 1.7160372280352103,
 		},
 		{
 			easting:     438700,
 			northing:    114800,
-			expectedLat: 50.930793682009025, // SHOULD BE 50.931358
-			expectedLon: -1.449243402413577, // SHOULD BE -1.450677
+			expectedLat: 50.93135051478858,
+			expectedLon: -1.4506775180363458,
 		},
 	}
 

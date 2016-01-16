@@ -1,5 +1,7 @@
 // Package osgridconverter contains utility functions to convert
 // Ordnance Survey grid references to latitude/longitude coordinates.
+// By Default the library will return latitude and longitude according
+// to the OSGB36 datum which is generally used for GPS systems
 package osgridconverter
 
 import (
@@ -10,17 +12,17 @@ import (
 )
 
 const (
-	a  = 6377563.396              // Airy 1830 major & minor semi-axes
-	b  = 6356256.909              // Airy 1830 major & minor semi-axes
-	f0 = 0.9996012717             // NatGrid scale factor on central meridian
-	φ0 = 49 * math.Pi / 180       // NatGrid true origin
-	λ0 = -2 * math.Pi / 180       // NatGrid true origin
-	n0 = -100000                  // northing of true origin, metres
-	e0 = 400000                   // easting of true origin, metres
-	e2 = 1 - (b*b)/(a*a)          // eccentricity squared
-	n  = (a - b) / (a + b)        // n
-	n2 = 0.0000027996662693370183 // n²
-	n3 = n * n * n                // n³
+	a  = 6377563.396        // Airy 1830 major & minor semi-axes
+	b  = 6356256.909        // Airy 1830 major & minor semi-axes
+	f0 = 0.9996012717       // NatGrid scale factor on central meridian
+	φ0 = 49 * math.Pi / 180 // NatGrid true origin
+	λ0 = -2 * math.Pi / 180 // NatGrid true origin
+	n0 = -100000            // northing of true origin, metres
+	e0 = 400000             // easting of true origin, metres
+	e2 = 1 - (b*b)/(a*a)    // eccentricity squared
+	n  = (a - b) / (a + b)  // n
+	n2 = n * n              // n²
+	n3 = n * n * n          // n³
 )
 
 var (
@@ -51,8 +53,7 @@ type OsGrid struct {
 
 // ConvertToLatLon converts Ordnance Survey grid reference easting and northing
 // coordinates to latitude and longitude according to the WGS-84 ellipsoidal model.
-// Easting and Northing arguments should be fully numeric
-// references in metres (eg 438700, 114800).
+// Easting and Northing arguments should be numeric references in metres (eg 438700, 114800).
 // It returns a struct containing latitude and longitude coordinates as float64 type
 // or an error if the arguments passed in are out of bounds
 func ConvertToLatLon(easting, northing float64) (*Coordinates, error) {
@@ -110,7 +111,13 @@ func ConvertToLatLon(easting, northing float64) (*Coordinates, error) {
 	c.Lat = toDegrees(φ)
 	c.Lon = toDegrees(λ)
 
-	return &c, nil
+	// convert to Vector3d
+	vect := toCartesian(c, OSGB36)
+
+	// convert back to coordinates
+	cc := vect.ToLatLon(WGS84)
+
+	return &cc, nil
 }
 
 // ConvertToNorthingEasting converts latitude and longitude to
@@ -175,12 +182,41 @@ func ConvertToNorthingEasting(lat, lon float64) (*OsGrid, error) {
 	return &o, nil
 }
 
-// toDegrees converts radians to numeric degrees
-func toDegrees(input float64) float64 {
-	return input * 180 / math.Pi
-}
+// toCartesian converts lat/lon coordinates to cartesian x/y/z coordinates.
+// It returns a vector representing a lat/lon point on x-y-z axes in metres
+// from the earth centre.
+func toCartesian(coords Coordinates, datum Datum) Vector3d {
 
-// toRadians converts numeric degrees to radians
-func toRadians(input float64) float64 {
-	return input * math.Pi / 180
+	aa := datum.a
+	bb := datum.b
+
+	φ := toRadians(coords.Lat)
+	λ := toRadians(coords.Lon)
+	sinφ := math.Sin(φ)
+	cosφ := math.Cos(φ)
+	sinλ := math.Sin(λ)
+	cosλ := math.Cos(λ)
+
+	eSq := (aa*aa - bb*bb) / (aa * aa) // make a and b const datum properties
+	ν := aa / math.Sqrt(1-eSq*sinφ*sinφ)
+	x := ν * cosφ * cosλ
+	y := ν * cosφ * sinλ
+	z := (1 - eSq) * ν * sinφ
+
+	// apply Helmert transform
+	// move to another function
+	rx := toRadians((datum.rx * -1) / 3600) // normalise seconds to radians
+	ry := toRadians((datum.ry * -1) / 3600) // normalise seconds to radians
+	rz := toRadians((datum.rz * -1) / 3600) // normalise seconds to radians
+	s1 := (datum.s*-1)/1e6 + 1              // normalise ppm to (s+1)
+
+	// apply transform
+	x2 := (datum.tx * -1) + x*s1 - y*rz + z*ry
+	y2 := (datum.ty * -1) + x*rz + y*s1 - z*rx
+	z2 := (datum.tz * -1) - x*ry + y*rx + z*s1
+
+	// instantiate new vector
+	vect := Vector3d{x: x2, y: y2, z: z2}
+
+	return vect
 }
