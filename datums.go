@@ -1,8 +1,7 @@
 package osgridconverter
 
-// Datum contains ellipsoid and Helmert transform parameters
-// needed to covert between one datum to another.
-// For more informations about datum see https://en.wikipedia.org/wiki/Geodetic_datum
+// Datum is a model of the earth that is used in mapping.
+// For more informations see https://en.wikipedia.org/wiki/Geodetic_datum
 type Datum struct {
 	a  float64 // major axis
 	b  float64 // minor axis
@@ -17,7 +16,7 @@ type Datum struct {
 }
 
 var (
-	// WGS84
+	// WGS84 datum
 	WGS84 = Datum{
 		a:  6378137,
 		b:  6356752.31425,
@@ -31,7 +30,7 @@ var (
 		s:  0.0,
 	}
 
-	// NAD83 functionally ≡ WGS84
+	// NAD83 datum. Functionally ≡ WGS84
 	// uses GRS80 ellipsoid parameters
 	NAD83 = Datum{
 		a:  6378137,
@@ -46,7 +45,7 @@ var (
 		s:  -0.0015,
 	}
 
-	// OSGB36
+	// OSGB36 datum
 	// uses Airy1830 ellipsoid parameters
 	OSGB36 = Datum{
 		a:  6377563.396,
@@ -61,7 +60,7 @@ var (
 		s:  20.4894,
 	}
 
-	// ED50
+	// ED50 datum
 	// uses Intl1924 ellipsoid parameters
 	ED50 = Datum{
 		a:  6378388,
@@ -76,7 +75,7 @@ var (
 		s:  -1.2,
 	}
 
-	// Irl1975
+	// Irl1975 datum
 	// uses AiryModified ellipsoid parameters
 	Irl1975 = Datum{
 		a:  6377340.189,
@@ -91,7 +90,7 @@ var (
 		s:  -8.150,
 	}
 
-	// TokyoJapan
+	// TokyoJapan datum
 	// uses Bessel1841 ellipsoid parameters
 	TokyoJapan = Datum{
 		a:  6377397.155,
