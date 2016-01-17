@@ -28,7 +28,7 @@ const (
 var (
 	// ErrInvalidOSGridPoints is an error that can be returned when OS
 	// grid points passed to the converter function have negative values
-	ErrInvalidOSGridPoints = errors.New("osgridconverter: Invalid arguments. Easting and Northing coordinates should be positive float64.")
+	ErrInvalidOSGridPoints = errors.New("osgridconverter: Invalid arguments. Easting and Northing coordinates should be positive float64")
 
 	// ErrInvalidLat is an error that can be returned when the latitude
 	// value passed to the converter function is lower than -90 or highter than +90
@@ -56,7 +56,7 @@ type OsGrid struct {
 // Easting and Northing arguments should be numeric references in metres (eg 438700, 114800).
 // It returns a struct containing latitude and longitude coordinates as float64 type
 // or an error if the arguments passed in are out of bounds
-func ConvertToLatLon(easting, northing float64) (*Coordinates, error) {
+func ConvertToLatLon(easting, northing float64, datum Datum) (*Coordinates, error) {
 	c := Coordinates{}
 
 	// validate input
@@ -111,11 +111,15 @@ func ConvertToLatLon(easting, northing float64) (*Coordinates, error) {
 	c.Lat = toDegrees(φ)
 	c.Lon = toDegrees(λ)
 
+	if datum == OSGB36 {
+		return &c, nil
+	}
+
 	// convert to Vector3d
 	vect := toCartesian(c, OSGB36)
 
 	// convert back to coordinates
-	cc := vect.ToLatLon(WGS84)
+	cc := vect.ToLatLon(datum)
 
 	return &cc, nil
 }

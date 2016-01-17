@@ -27,7 +27,7 @@ func TestConvertToLatLon(t *testing.T) {
 
 	for _, testcase := range testcases {
 
-		c, err := ConvertToLatLon(testcase.easting, testcase.northing)
+		c, err := ConvertToLatLon(testcase.easting, testcase.northing, WGS84)
 
 		if err != nil {
 			t.Errorf("Error generating lat/lon coordinates: %v", err)
@@ -64,7 +64,7 @@ func TestConvertToLatLonError(t *testing.T) {
 
 	for _, testcase := range testcases {
 
-		_, err := ConvertToLatLon(testcase.easting, testcase.northing)
+		_, err := ConvertToLatLon(testcase.easting, testcase.northing, WGS84)
 
 		if err == nil {
 			t.Errorf("Expecting Error when passing out of bounds arguments")
