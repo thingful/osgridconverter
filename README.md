@@ -1,8 +1,6 @@
 # OS Grid Converter
 
 A Go library that provides utilities to convert Ordnance Survey Grid references to Latitude and Longitude.
-By default the library will return coordinates according to the OSGB36 datum which is generally used for GPS systems.
-
 
 ## Credits
 Original javascript implementaion by Chris Veness. For more information see [http://www.movable-type.co.uk/scripts/latlong-gridref.html](http://www.movable-type.co.uk/scripts/latlong-gridref.html "latlong gridreference")
