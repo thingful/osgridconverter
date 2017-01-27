@@ -1,4 +1,4 @@
-box: wercker/golang
+box: golang:1.7.4
 # Build definition
 build:
   steps:
@@ -10,4 +10,4 @@ build:
     - script:
         name: go test
         code: |
-          go test
+          go test ./...
