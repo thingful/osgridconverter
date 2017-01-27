@@ -1,5 +1,7 @@
 # OS Grid Converter
 
+[![wercker status](https://app.wercker.com/status/f84eb5310b57ee9d6acc3501763fdb75/s/master "wercker status")](https://app.wercker.com/project/byKey/f84eb5310b57ee9d6acc3501763fdb75)
+
 A Go library that provides utilities to convert Ordnance Survey Grid references to Latitude and Longitude.
 
 ## Credits
